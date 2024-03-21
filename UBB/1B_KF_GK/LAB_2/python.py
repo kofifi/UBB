@@ -7,34 +7,9 @@ pygame.init()
 
 # Constants for screen dimensions and polygon properties
 SCREEN_WIDTH, SCREEN_HEIGHT = 600, 600
-NUM_SIDES = 4
+NUM_SIDES = 18
 RADIUS = 150
 BG_COLOR = pygame.Color('yellow')
-
-# Custom center positions for each key press
-CENTER_POSITIONS = {
-    pygame.K_1: (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2),
-    pygame.K_2: (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2),
-    # ... Add more custom positions for keys 3-9
-}
-
-# Rotation angles for each key 1-9
-ROTATION_ANGLES = {
-    pygame.K_1: math.radians(-45),
-    pygame.K_2: math.radians(0),
-    # ... Complete with the other angles for keys 3-9
-}
-
-# Scale factors for each key press
-SCALE_FACTORS = {
-    pygame.K_1: (0.5, 0.5),
-    pygame.K_2: (1.0, 1.0),
-    # ... Add more scale factors for keys 3-9
-}
-
-# Create the screen object
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("18-sided Polygon with Rotation")
 
 # Function to calculate the polygon points
 def calculate_polygon_points(center_x, center_y, sides, radius, scale_factor, rotation_angle):
@@ -47,41 +22,55 @@ def calculate_polygon_points(center_x, center_y, sides, radius, scale_factor, ro
         points.append((x, y))
     return points
 
-# Set default values for the center position and scale factor
-center_x, center_y = SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2
-scale_factor = (1.0, 1.0)
-rotation_angle = 0
+# Updated function to apply shearing to the polygon points on both X and Y
+def shear_polygon_points(points, shearing_factor_x, shearing_factor_y):
+    sheared_points = [(x + y * shearing_factor_x, y + x * shearing_factor_y) for x, y in points]
+    return sheared_points
+
+# https://elearning.ubb.edu.pl/pluginfile.php/122717/mod_resource/content/1/GrafikaKomputerowaLab.pdf
+# Initial configuration with separate shearing factors for x and y
+configurations = {
+    pygame.K_1: {"scale_factor": (0.5, 0.5), "rotation_angle": math.radians(-45), "shearing_factor_x": 0, "shearing_factor_y": 0, "center_x": SCREEN_WIDTH // 2, "center_y": SCREEN_HEIGHT // 2},
+    pygame.K_2: {"scale_factor": (1.0, 1.0), "rotation_angle": math.radians(0), "shearing_factor_x": 0.25, "shearing_factor_y": 0, "center_x": SCREEN_WIDTH // 2.60, "center_y": SCREEN_HEIGHT // 2},
+    pygame.K_3: {"scale_factor": (0.75, 1.30), "rotation_angle": math.radians(45), "shearing_factor_x": 0, "shearing_factor_y": 0, "center_x": SCREEN_WIDTH // 2, "center_y": SCREEN_HEIGHT // 2},
+    pygame.K_4: {"scale_factor": (1.5, 1.0), "rotation_angle": math.radians(-45), "shearing_factor_x": 0.5, "shearing_factor_y": 0, "center_x": SCREEN_WIDTH // 3.60, "center_y": SCREEN_HEIGHT // 2},
+    pygame.K_5: {"scale_factor": (1.75, 0.5), "rotation_angle": math.radians(-45), "shearing_factor_x": 0, "shearing_factor_y": 0, "center_x": SCREEN_WIDTH // 2, "center_y": SCREEN_HEIGHT // 11},
+    pygame.K_6: {"scale_factor": (1.0, 1.5), "rotation_angle": math.radians(-45), "shearing_factor_x": 0, "shearing_factor_y": -0.5, "center_x": SCREEN_WIDTH // 2, "center_y": SCREEN_HEIGHT // 1.35},
+    pygame.K_7: {"scale_factor": (0.75, 1.30), "rotation_angle": math.radians(45), "shearing_factor_x": 0, "shearing_factor_y": 0, "center_x": SCREEN_WIDTH // 2, "center_y": SCREEN_HEIGHT // 2},
+    pygame.K_9: {"scale_factor": (2, 1.5), "rotation_angle": math.radians(-135), "shearing_factor_x": 0, "shearing_factor_y": 0.25, "center_x": SCREEN_WIDTH // 1.35, "center_y": SCREEN_HEIGHT // 3.5},
+
+}
+
+# Create the screen object
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Dynamic Scaling Polygon")
 
 # Main loop
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_0:
-                # Reset the rotation angle and scale factor
-                rotation_angle = 0
-                scale_factor = SCALE_FACTORS[pygame.K_1]
-                # Reset the center position
-                center_x, center_y = CENTER_POSITIONS[pygame.K_1]
-            elif event.key in ROTATION_ANGLES:
-                # Update the rotation angle, scale factor, and center position based on the key pressed
-                rotation_angle = ROTATION_ANGLES[event.key]
-                scale_factor = SCALE_FACTORS.get(event.key, (1.0, 1.0))
-                center_x, center_y = CENTER_POSITIONS.get(event.key, (center_x, center_y))
+            pygame.quit()
+            sys.exit()
 
-    # Calculate the points of the polygon
-    polygon_points = calculate_polygon_points(center_x, center_y, NUM_SIDES, RADIUS, scale_factor, rotation_angle)
+        if event.type == pygame.KEYDOWN and event.key in configurations:
+            config = configurations[event.key]
+            center_x = config["center_x"]
+            center_y = config["center_y"]
+            scale_factor = config["scale_factor"]
+            rotation_angle = config["rotation_angle"]
+            shearing_factor_x = config["shearing_factor_x"]
+            shearing_factor_y = config["shearing_factor_y"]
 
-    # Fill the background color
-    screen.fill(BG_COLOR)
+            # Calculate polygon points with current configuration
+            polygon_points = calculate_polygon_points(center_x, center_y, NUM_SIDES, RADIUS, scale_factor, rotation_angle)
+            # Apply shearing with factors for both axes
+            sheared_polygon_points = shear_polygon_points(polygon_points, shearing_factor_x, shearing_factor_y)
 
-    # Draw the polygon
-    pygame.draw.polygon(screen, (0, 0, 0), polygon_points)
-
-    # Update the display
-    pygame.display.flip()
+            # Clear screen and redraw with new configuration
+            screen.fill(BG_COLOR)
+            pygame.draw.polygon(screen, (0, 0, 0), sheared_polygon_points)
+            pygame.display.flip()
 
 # Quit pygame
 pygame.quit()
