@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>File compression</title>
+</head>
+<body>
+
+<h1>File compression (Brotli)</h1>
+
+<p>Pick a file and click a button. Compression is lossless - unpacking gives you
+back exactly the same file.</p>
+
+<p>
+  File: <input type="file" id="file">
+</p>
+
+<p>
+  Quality (0-11):
+  <input type="number" id="quality" value="11" min="0" max="11">
+</p>
+
+<p>
+  <button id="btnCompress" onclick="send('compress')">Compress</button>
+  <button id="btnDecompress" onclick="send('decompress')">Decompress (.br)</button>
+</p>
+
+<div id="result"></div>
+
+<script>
+async function send(mode) {
+  var file = document.getElementById("file").files[0];
+  var quality = document.getElementById("quality").value;
+  var result = document.getElementById("result");
+  var btn1 = document.getElementById("btnCompress");
+  var btn2 = document.getElementById("btnDecompress");
+
+  if (!file) {
+    result.innerHTML = "<p>No file selected.</p>";
+    return;
+  }
+
+  btn1.disabled = true;
+  btn2.disabled = true;
+  result.innerHTML = "<p>Working, please wait...</p>";
+
+  try {
+    var url = "/api/" + mode;
+    if (mode === "compress") url = url + "?quality=" + quality;
+
+    var response = await fetch(url, { method: "POST", body: file });
+
+    if (!response.ok) {
+      var failure = await response.json();
+      result.innerHTML = "<p>Error: " + failure.error + "</p>";
+      return;
+    }
+
+    var blob = await response.blob();
+    var before = Number(response.headers.get("X-Original-Size"));
+    var after = Number(response.headers.get("X-Result-Size"));
+    var elapsed = response.headers.get("X-Elapsed-Ms");
+
+    var name;
+    if (mode === "compress") {
+      name = file.name + ".br";
+    } else if (file.name.endsWith(".br")) {
+      name = file.name.slice(0, -3);
+    } else {
+      name = file.name + ".unpacked";
+    }
+
+    var summary;
+    if (mode === "compress") {
+      summary = "Saved: " + (100 - after / before * 100).toFixed(1) + "%";
+    } else {
+      summary = "Recovered: " + (after / before).toFixed(1) + "x more data";
+    }
+
+    var link = URL.createObjectURL(blob);
+
+    result.innerHTML =
+      "<h2>Result</h2>" +
+      "<ul>" +
+      "<li>Size before: " + before + " bytes</li>" +
+      "<li>Size after: " + after + " bytes</li>" +
+      "<li>" + summary + "</li>" +
+      "<li>Time: " + elapsed + " ms</li>" +
+      "</ul>" +
+      "<a href='" + link + "' download='" + name + "'>Download " + name + "</a>";
+  } catch (e) {
+    result.innerHTML = "<p>Error: " + e.message + "</p>";
+  } finally {
+    btn1.disabled = false;
+    btn2.disabled = false;
+  }
+}
+</script>
+
+</body>
+</html>
