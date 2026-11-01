@@ -73,3 +73,50 @@ print(df.head(10))
 # 7
 zadanie(7)
 print(df.tail(10))
+
+# 8
+zadanie(8)
+df.info()
+
+# 9
+zadanie(9)
+print(df.shape)
+
+# 10
+zadanie(10)
+print(df.describe())
+
+# 11
+zadanie(11)
+print(df.select_dtypes(exclude="number").describe())
+
+# 12
+zadanie(12)
+print(df.isna().sum())
+print(len(df.dropna()))
+df = df.drop(columns=["vit_a", "vit_c", "calcium"])
+df = df.dropna().drop_duplicates().reset_index(drop=True)
+print(df.shape)
+
+# 13
+zadanie(13)
+print(df["item"].head())
+print(df[["item", "calories"]].head())
+print(df.loc[0:4, ["restaurant", "item"]])
+print(df.loc[3, "item"])
+print(df.at[3, "calories"])
+print(df.iloc[0:5, 0:3])
+print(df.iloc[[0, 2, 4], [1, 2]])
+print(df.iat[3, 2])
+
+# 14
+zadanie(14)
+print(df[df["calories"] > 1000].head())
+
+# 15
+zadanie(15)
+print(df[(df["restaurant"] == "Mcdonalds") & (df["calories"] < 400) & (df["protein"] > 20)].head())
+
+# 16
+zadanie(16)
+print(df[df["item"].str.contains("Chicken")].head())
