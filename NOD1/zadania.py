@@ -120,3 +120,56 @@ print(df[(df["restaurant"] == "Mcdonalds") & (df["calories"] < 400) & (df["prote
 # 16
 zadanie(16)
 print(df[df["item"].str.contains("Chicken")].head())
+
+# 17
+zadanie(17)
+print(df[~df["item"].str.contains("Chicken")].head())
+
+# 18
+zadanie(18)
+df["rodzaj"] = np.select(
+    [df["item"].str.contains("Salad"), df["item"].str.contains("Chicken")],
+    ["sałatka", "kurczak"],
+    default="inne",
+)
+print(df["rodzaj"].value_counts())
+
+# 19
+zadanie(19)
+df = df.drop(columns=["salad"])
+print(df.columns.tolist())
+
+# 20
+zadanie(20)
+df = df.rename(columns={"restaurant": "restauracja"})
+print(df.columns.tolist())
+
+# 21
+zadanie(21)
+df.to_csv("fastfood_czyste.csv", index=False)
+
+# 22
+zadanie(22)
+print(df["calories"].mean(), df["calories"].max(), df["calories"].min())
+
+# 23
+zadanie(23)
+print(len(df))
+
+# 24
+zadanie(24)
+print(df["restauracja"].unique())
+
+# 25
+zadanie(25)
+print(df["restauracja"].value_counts())
+
+# 26
+zadanie(26)
+print(df.sort_values("calories").head())
+print(df.sort_values("calories", ascending=False).head())
+
+# 27
+zadanie(27)
+print(df.nlargest(10, "calories"))
+print(df.nsmallest(10, "calories"))
