@@ -173,3 +173,34 @@ print(df.sort_values("calories", ascending=False).head())
 zadanie(27)
 print(df.nlargest(10, "calories"))
 print(df.nsmallest(10, "calories"))
+
+# 28
+zadanie(28)
+print(df[df["restauracja"].isin(["Subway", "Taco Bell"])].nlargest(10, "calories"))
+
+# 29
+zadanie(29)
+grupy = df.groupby(["restauracja", "rodzaj"]).mean(numeric_only=True)
+print(grupy)
+
+# 30
+zadanie(30)
+statystyki = df.groupby("restauracja").agg(
+    {
+        "calories": "mean",
+        "protein": "mean",
+        "sodium": ["count", "median"],
+        "sugar": ["count", "median"],
+    }
+)
+print(statystyki)
+
+# 31
+zadanie(31)
+print(grupy.index.names)
+print(statystyki.columns.tolist())
+
+# 32
+zadanie(32)
+print(grupy.sort_index(level="rodzaj"))
+print(statystyki.sort_values(("calories", "mean"), ascending=False))
