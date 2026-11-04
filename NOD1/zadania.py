@@ -204,3 +204,55 @@ print(statystyki.columns.tolist())
 zadanie(32)
 print(grupy.sort_index(level="rodzaj"))
 print(statystyki.sort_values(("calories", "mean"), ascending=False))
+
+# 33
+zadanie(33)
+tabela = pd.pivot_table(df, values="calories", index="restauracja", columns="rodzaj", aggfunc="mean")
+print(tabela)
+
+# 34
+zadanie(34)
+print(tabela.index)
+print(tabela.columns)
+
+# 35
+zadanie(35)
+tabela_zlozona = pd.pivot_table(df, values="calories", index=["restauracja", "rodzaj"], aggfunc="mean")
+print(tabela_zlozona.index)
+
+# 36
+zadanie(36)
+import matplotlib.pyplot as plt
+
+# 37
+zadanie(37)
+from IPython import get_ipython
+
+zeszyt = get_ipython()
+if zeszyt is not None:
+    zeszyt.run_line_magic("matplotlib", "inline")
+
+# 38
+zadanie(38)
+tabela.plot(kind="bar", figsize=(11, 5), width=0.8, color=["#2a78d6", "#eb6834", "#1baf7a"], edgecolor="white")
+plt.title("Średnia kaloryczność dań w sieciach fast food")
+plt.xlabel("Restauracja")
+plt.ylabel("Średnia liczba kalorii")
+plt.xticks(rotation=30, ha="right")
+plt.legend(title="Rodzaj dania")
+plt.tight_layout()
+plt.savefig("wykres38.png")
+plt.show()
+najciezsza = df.groupby("restauracja")["calories"].mean().idxmax()
+print(f"Najbardziej kaloryczne menu ma średnio {najciezsza}, a sałatki nie zawsze są najlżejszym wyborem.")
+
+# 39
+zadanie(39)
+df["calories"].plot(kind="hist", bins=30, figsize=(9, 5), color="#2a78d6", edgecolor="white")
+plt.title("Rozkład kaloryczności dań")
+plt.xlabel("Kalorie")
+plt.ylabel("Liczba dań")
+plt.tight_layout()
+plt.savefig("wykres39.png")
+plt.show()
+print("Około 80% dań ma od 200 do 800 kalorii, a tylko jedno przekracza 2000.")
