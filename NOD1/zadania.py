@@ -256,3 +256,48 @@ plt.tight_layout()
 plt.savefig("wykres39.png")
 plt.show()
 print("Około 80% dań ma od 200 do 800 kalorii, a tylko jedno przekracza 2000.")
+
+# 40
+zadanie(40)
+kuchnia = pd.DataFrame(
+    {
+        "restauracja": ["Mcdonalds", "Burger King", "Subway", "Taco Bell"],
+        "kuchnia": ["burgery", "burgery", "kanapki", "meksykańska"],
+    }
+)
+print(df.merge(kuchnia, on="restauracja", how="inner")[["restauracja", "item", "kuchnia"]].head())
+print(pd.concat([df.head(2), df.tail(2)])[["restauracja", "item"]])
+
+# 41
+zadanie(41)
+df["procent_dziennych_kalorii"] = df["calories"] / 2000 * 100
+df["procent_dziennego_sodu"] = df["sodium"] / 2300 * 100
+print(df[["item", "procent_dziennych_kalorii", "procent_dziennego_sodu"]].head())
+
+# 42
+zadanie(42)
+df["ocena"] = df["calories"].apply(lambda k: "lekkie" if k < 400 else "średnie" if k < 800 else "ciężkie")
+print(df["ocena"].value_counts())
+
+# 43
+zadanie(43)
+liczba = 0
+suma_kalorii = 0
+for fragment in pd.read_csv("fastfood_czyste.csv", chunksize=100):
+    liczba += len(fragment)
+    suma_kalorii += fragment["calories"].sum()
+print(liczba, suma_kalorii / liczba)
+
+# 44
+zadanie(44)
+srednia_pandas = df["calories"].mean()
+srednia_numpy = np.mean(df["calories"])
+print(srednia_pandas, srednia_numpy)
+print(f"Przeciętne danie ma około {srednia_pandas:.0f} kalorii, czyli ponad jedną czwartą dziennego zapotrzebowania.")
+
+# 45
+zadanie(45)
+mediana_pandas = df["calories"].median()
+mediana_numpy = np.median(df["calories"])
+print(mediana_pandas, mediana_numpy)
+print(f"Mediana {mediana_pandas:.0f} jest niższa od średniej, bo kilka bardzo kalorycznych dań ciągnie średnią w górę.")
