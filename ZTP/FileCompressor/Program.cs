@@ -3,29 +3,32 @@ using FileCompressor;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSingleton<IMatchLengthCounter, ScalarMatchLengthCounter>();
 builder.Services.AddSingleton<ICompressor, BrotliCompressor>();
+builder.Services.AddSingleton<ICompressor, LzCompressor>();
+builder.Services.AddSingleton<ICompressorProvider, CompressorProvider>();
 
 var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-app.MapPost("/api/compress", async (HttpRequest request, HttpResponse response, ICompressor compressor, int quality = 11) =>
+app.MapPost("/api/compress", async (HttpRequest request, HttpResponse response, ICompressorProvider compressors, int quality = 11, string algorithm = "brotli") =>
 {
     byte[] input = await ReadBody(request);
     if (input.Length == 0)
         return Results.BadRequest(new { error = "empty file" });
 
-    return Run(response, input, () => compressor.Compress(input, quality));
+    return Run(response, input, () => compressors.Get(algorithm).Compress(input, quality));
 });
 
-app.MapPost("/api/decompress", async (HttpRequest request, HttpResponse response, ICompressor compressor) =>
+app.MapPost("/api/decompress", async (HttpRequest request, HttpResponse response, ICompressorProvider compressors, string algorithm = "brotli") =>
 {
     byte[] input = await ReadBody(request);
     if (input.Length == 0)
         return Results.BadRequest(new { error = "empty file" });
 
-    return Run(response, input, () => compressor.Decompress(input));
+    return Run(response, input, () => compressors.Get(algorithm).Decompress(input));
 });
 
 app.Run();

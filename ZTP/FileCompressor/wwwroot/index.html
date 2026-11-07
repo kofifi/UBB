@@ -6,7 +6,7 @@
 </head>
 <body>
 
-<h1>File compression (Brotli)</h1>
+<h1>File compression</h1>
 
 <p>Pick a file and click a button. Compression is lossless - unpacking gives you
 back exactly the same file.</p>
@@ -16,13 +16,21 @@ back exactly the same file.</p>
 </p>
 
 <p>
+  Algorithm:
+  <select id="algorithm">
+    <option value="brotli">Brotli (.br)</option>
+    <option value="lz">LZ (.lzk)</option>
+  </select>
+</p>
+
+<p>
   Quality (0-11):
   <input type="number" id="quality" value="11" min="0" max="11">
 </p>
 
 <p>
   <button id="btnCompress" onclick="send('compress')">Compress</button>
-  <button id="btnDecompress" onclick="send('decompress')">Decompress (.br)</button>
+  <button id="btnDecompress" onclick="send('decompress')">Decompress</button>
 </p>
 
 <div id="result"></div>
@@ -31,6 +39,8 @@ back exactly the same file.</p>
 async function send(mode) {
   var file = document.getElementById("file").files[0];
   var quality = document.getElementById("quality").value;
+  var algorithm = document.getElementById("algorithm").value;
+  var extension = algorithm === "lz" ? ".lzk" : ".br";
   var result = document.getElementById("result");
   var btn1 = document.getElementById("btnCompress");
   var btn2 = document.getElementById("btnDecompress");
@@ -45,8 +55,8 @@ async function send(mode) {
   result.innerHTML = "<p>Working, please wait...</p>";
 
   try {
-    var url = "/api/" + mode;
-    if (mode === "compress") url = url + "?quality=" + quality;
+    var url = "/api/" + mode + "?algorithm=" + algorithm;
+    if (mode === "compress") url = url + "&quality=" + quality;
 
     var response = await fetch(url, { method: "POST", body: file });
 
@@ -63,9 +73,9 @@ async function send(mode) {
 
     var name;
     if (mode === "compress") {
-      name = file.name + ".br";
-    } else if (file.name.endsWith(".br")) {
-      name = file.name.slice(0, -3);
+      name = file.name + extension;
+    } else if (file.name.endsWith(extension)) {
+      name = file.name.slice(0, -extension.length);
     } else {
       name = file.name + ".unpacked";
     }

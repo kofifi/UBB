@@ -4,6 +4,8 @@ namespace FileCompressor;
 
 public class BrotliCompressor : ICompressor
 {
+    public string Name => "brotli";
+
     public byte[] Compress(byte[] data, int quality)
     {
         if (quality < 0 || quality > 11)
