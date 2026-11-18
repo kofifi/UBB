@@ -34,5 +34,5 @@ public static class TestData
     }
 
     public static ICompressor Compressor(string algorithm) =>
-        algorithm == "lz" ? new LzCompressor(new ScalarMatchLengthCounter()) : new BrotliCompressor();
+        algorithm == "lz" ? new LzCompressor(new SimdMatchLengthCounter()) : new BrotliCompressor();
 }

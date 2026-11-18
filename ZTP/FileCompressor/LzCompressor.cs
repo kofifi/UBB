@@ -9,6 +9,8 @@ public class LzCompressor : ICompressor
     private const int MaxOffset = 65535;
     private const int WindowMask = 65535;
     private const int HashBits = 16;
+    private const int FastModeMaxQuality = 5;
+    private const int SkipShift = 6;
     private const int HeaderSize = 8;
     private const int MaxOutputSize = 256 * 1024 * 1024;
     private static readonly byte[] Magic = "LZK1"u8.ToArray();
@@ -28,6 +30,7 @@ public class LzCompressor : ICompressor
             throw new CompressionException("quality must be between 0 and 11");
 
         int maxAttempts = 1 << quality;
+        bool thorough = quality > FastModeMaxQuality;
         var output = new MemoryStream(data.Length / 2 + HeaderSize);
         output.Write(Magic);
         WriteInt32(output, data.Length);
@@ -46,14 +49,21 @@ public class LzCompressor : ICompressor
 
             if (length < MinMatch)
             {
-                pos++;
+                pos += thorough ? 1 : 1 + ((pos - anchor) >> SkipShift);
                 continue;
             }
 
             WriteSequence(output, data.AsSpan(anchor, pos - anchor), offset, length);
 
-            for (int i = pos + 1; i < pos + length && i + MinMatch <= data.Length; i++)
-                Insert(data, i, head, prev);
+            if (thorough)
+            {
+                for (int i = pos + 1; i < pos + length && i + MinMatch <= data.Length; i++)
+                    Insert(data, i, head, prev);
+            }
+            else if (pos + length - 2 + MinMatch <= data.Length)
+            {
+                Insert(data, pos + length - 2, head, prev);
+            }
 
             pos += length;
             anchor = pos;
@@ -117,13 +127,16 @@ public class LzCompressor : ICompressor
 
         for (int attempt = 0; attempt < maxAttempts && candidate >= 0 && pos - candidate <= MaxOffset; attempt++)
         {
-            int length = counter.Count(data.AsSpan(candidate, current.Length), current);
-            if (length > bestLength)
+            if (data[candidate + bestLength] == data[pos + bestLength])
             {
-                bestLength = length;
-                bestOffset = pos - candidate;
-                if (length >= NiceMatch)
-                    break;
+                int length = counter.Count(data.AsSpan(candidate, current.Length), current);
+                if (length > bestLength)
+                {
+                    bestLength = length;
+                    bestOffset = pos - candidate;
+                    if (length >= NiceMatch || length == current.Length)
+                        break;
+                }
             }
 
             int next = prev[candidate & WindowMask];

@@ -3,7 +3,7 @@ using FileCompressor;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<IMatchLengthCounter, ScalarMatchLengthCounter>();
+builder.Services.AddSingleton<IMatchLengthCounter, SimdMatchLengthCounter>();
 builder.Services.AddSingleton<ICompressor, BrotliCompressor>();
 builder.Services.AddSingleton<ICompressor, LzCompressor>();
 builder.Services.AddSingleton<ICompressorProvider, CompressorProvider>();

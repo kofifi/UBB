@@ -6,6 +6,7 @@ namespace FileCompressor.Benchmarks;
 public class MatchLengthBenchmarks
 {
     private readonly IMatchLengthCounter scalar = new ScalarMatchLengthCounter();
+    private readonly IMatchLengthCounter simd = new SimdMatchLengthCounter();
     private byte[] left;
     private byte[] right;
 
@@ -23,6 +24,9 @@ public class MatchLengthBenchmarks
 
     [Benchmark(Baseline = true)]
     public int Scalar() => scalar.Count(left, right);
+
+    [Benchmark]
+    public int Simd() => simd.Count(left, right);
 
     [Benchmark]
     public int CommonPrefixLength() => left.AsSpan().CommonPrefixLength(right);
