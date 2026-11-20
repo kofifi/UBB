@@ -301,3 +301,45 @@ mediana_pandas = df["calories"].median()
 mediana_numpy = np.median(df["calories"])
 print(mediana_pandas, mediana_numpy)
 print(f"Mediana {mediana_pandas:.0f} jest niższa od średniej, bo kilka bardzo kalorycznych dań ciągnie średnią w górę.")
+
+# 46
+zadanie(46)
+odchylenie_pandas = df["calories"].std()
+odchylenie_numpy = np.std(df["calories"], ddof=1)
+print(odchylenie_pandas, odchylenie_numpy)
+print(f"Odchylenie {odchylenie_pandas:.0f} kalorii to ponad połowa średniej, więc dania bardzo różnią się kalorycznością.")
+
+# 47
+zadanie(47)
+wariancja_pandas = df["calories"].var()
+wariancja_numpy = np.var(df["calories"], ddof=1)
+print(wariancja_pandas, wariancja_numpy, odchylenie_pandas**2)
+print(f"Wariancja równa się kwadratowi odchylenia: {np.isclose(wariancja_pandas, odchylenie_pandas**2)}.")
+
+# 48
+zadanie(48)
+korelacja_pandas = df["calories"].corr(df["protein"])
+korelacja_numpy = np.corrcoef(df["calories"], df["protein"])[0, 1]
+print(korelacja_pandas, korelacja_numpy)
+print(f"Korelacja {korelacja_pandas:.2f} jest dodatnia i silna: im więcej kalorii ma danie, tym zwykle więcej w nim białka.")
+
+# 49
+zadanie(49)
+kowariancja_pandas = df["calories"].cov(df["protein"])
+kowariancja_numpy = np.cov(df["calories"], df["protein"])[0, 1]
+print(kowariancja_pandas, kowariancja_numpy)
+print(f"Kowariancja {kowariancja_pandas:.0f} ma ten sam znak co korelacja, ale zależy od jednostek, a korelacja jest przeskalowana do zakresu od -1 do 1.")
+
+# 50
+zadanie(50)
+weglowodany = df[["total_carb", "sugar"]]
+print(weglowodany.agg(["mean", "median", "std"]))
+korelacja_cukru = df["total_carb"].corr(df["sugar"])
+kowariancja_cukru = df["total_carb"].cov(df["sugar"])
+print(korelacja_cukru, kowariancja_cukru)
+print(
+    f"Węglowodany są wyraźnie rozproszone (odchylenie {df['total_carb'].std():.1f} g przy średniej {df['total_carb'].mean():.1f} g), "
+    f"a cukier jeszcze bardziej względem swojej średniej {df['sugar'].mean():.1f} g. Korelacja {korelacja_cukru:.2f} "
+    f"i dodatnia kowariancja {kowariancja_cukru:.1f} oznaczają zależność umiarkowaną i dodatnią: "
+    "dania z większą ilością węglowodanów mają zwykle więcej cukru."
+)
