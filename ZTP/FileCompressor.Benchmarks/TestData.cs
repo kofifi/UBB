@@ -1,4 +1,8 @@
 using System.Text;
+using FileCompressor.Compression;
+using FileCompressor.Compression.Brotli;
+using FileCompressor.Compression.Lz;
+using FileCompressor.Compression.Lz.Matching;
 
 namespace FileCompressor.Benchmarks;
 

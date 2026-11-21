@@ -1,4 +1,5 @@
 using BenchmarkDotNet.Attributes;
+using FileCompressor.Compression;
 
 namespace FileCompressor.Benchmarks;
 

@@ -1,9 +1,4 @@
-namespace FileCompressor;
-
-public interface ICompressorProvider
-{
-    ICompressor Get(string name);
-}
+namespace FileCompressor.Compression;
 
 public class CompressorProvider : ICompressorProvider
 {

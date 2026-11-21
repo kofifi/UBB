@@ -1,5 +1,8 @@
 using System.Diagnostics;
-using FileCompressor;
+using FileCompressor.Compression;
+using FileCompressor.Compression.Brotli;
+using FileCompressor.Compression.Lz;
+using FileCompressor.Compression.Lz.Matching;
 
 var builder = WebApplication.CreateBuilder(args);
 

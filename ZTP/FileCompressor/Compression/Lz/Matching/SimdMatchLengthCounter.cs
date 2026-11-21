@@ -1,7 +1,7 @@
 using System.Numerics;
 using System.Runtime.Intrinsics;
 
-namespace FileCompressor;
+namespace FileCompressor.Compression.Lz.Matching;
 
 public class SimdMatchLengthCounter : IMatchLengthCounter
 {

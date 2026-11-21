@@ -1,6 +1,6 @@
 using System.IO.Compression;
 
-namespace FileCompressor;
+namespace FileCompressor.Compression.Brotli;
 
 public class BrotliCompressor : ICompressor
 {

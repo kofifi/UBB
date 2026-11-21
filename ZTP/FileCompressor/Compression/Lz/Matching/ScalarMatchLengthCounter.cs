@@ -1,9 +1,4 @@
-namespace FileCompressor;
-
-public interface IMatchLengthCounter
-{
-    int Count(ReadOnlySpan<byte> left, ReadOnlySpan<byte> right);
-}
+namespace FileCompressor.Compression.Lz.Matching;
 
 public class ScalarMatchLengthCounter : IMatchLengthCounter
 {
