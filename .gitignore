@@ -1,20 +1,45 @@
 node_modules/
+npm-debug.log*
 
 bin/
 obj/
 *.user
+BenchmarkDotNet.Artifacts/
+
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
 
 *.log
-npm-debug.log*
-
 .env
 .env.local
 
 .DS_Store
 Thumbs.db
+*:Zone.Identifier
 
 .vscode/
 .idea/
 *.swp
 
 *.br
+
+.vendors/
+DSPj/vendor/
+DSPj/**/out/
+
+NOD1/**/*.csv
+NOD1/**/*.xlsx
+NOD1/**/*.png
+
+UM/**/data/raw/*
+UM/**/data/processed/*
+UM/**/models/*
+UM/**/reports/*
+!UM/**/.gitkeep
